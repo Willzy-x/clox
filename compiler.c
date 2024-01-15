@@ -30,7 +30,7 @@ typedef enum {
 	PREC_PRIMARY
 } Precedence;
 
-typedef void (*ParseFn)();
+typedef void (*ParseFn)(void);
 
 typedef struct {
 	ParseFn prefix;
@@ -41,7 +41,7 @@ typedef struct {
 Parser parser;
 Chunk* compilingChunk;
 
-static Chunk* currentChunk() {
+static Chunk* currentChunk(void) {
 	return compilingChunk;
 }
 
@@ -52,7 +52,7 @@ static void errorAt(Token* token, const char* message) {
 
 	if (token->type == TOKEN_EOF) {
 		fprintf(stderr, " at end");
-	} else if (token->type ==  TOKEN_ERROR) {
+	} else if (token->type == TOKEN_ERROR) {
 		// Nothing
 	} else {
 		fprintf(stderr, " at '%.*s'", token->length, token->start);
@@ -70,7 +70,7 @@ static void errorAtCurrent(const char* message) {
 	errorAt(&parser.current, message);
 }
 
-static void advance() {
+static void advance(void) {
 	parser.previous = parser.current;
 	
 	for (;;) {
@@ -99,7 +99,7 @@ static void emitBytes(uint8_t byte1, uint8_t byte2) {
 	emitByte(byte2);
 }
 
-static void emitReturn() {
+static void emitReturn(void) {
 	emitByte(OP_RETURN);
 }
 
@@ -116,7 +116,7 @@ static void emitConstant(Value value) {
 	emitBytes(OP_CONSTANT, makeConstant(value));
 }
 
-static void endCompiler() {
+static void endCompiler(void) {
 	emitReturn();
 #ifdef DEBUG_PRINT_CODE
 	if (!parser.hadError) {
@@ -125,11 +125,11 @@ static void endCompiler() {
 #endif
 }
 
-static void expression();
+static void expression(void);
 static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence precedence);
 
-static void binary() {
+static void binary(void) {
 	TokenType operatorType = parser.previous.type;
 	ParseRule* rule = getRule(operatorType);
 	parsePrecedence((Precedence)(rule->precedence + 1));
@@ -144,17 +144,17 @@ static void binary() {
 	}
 }
 
-static void grouping() {
+static void grouping(void) {
 	expression();
 	consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-static void number() {
+static void number(void) {
 	double value = strtod(parser.previous.start, NULL);
 	emitConstant(NUMBER_VAL(value));
 }
 
-static void unary() {
+static void unary(void) {
 	TokenType operatorType = parser.previous.type;
 
 	// Compile the operand
@@ -230,7 +230,7 @@ static ParseRule* getRule(TokenType type) {
 	return &rules[type];
 }
 
-static void expression() {
+static void expression(void) {
 	parsePrecedence(PREC_ASSIGNMENT);
 }
 

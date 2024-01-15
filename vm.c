@@ -8,7 +8,7 @@
 
 VM vm;
 
-static void resetStack() {
+static void resetStack(void) {
 	vm.stackTop = vm.stack;
 }
 
@@ -29,14 +29,14 @@ static Value peek(int distance) {
 	return vm.stackTop[-1 - distance];
 }
 
-void initVM() {
+void initVM(void) {
 	resetStack();
 }
 
-void freeVM() {
+void freeVM(void) {
 }
 
-static InterpretResult run() {
+static InterpretResult run(void) {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define BINARY_OP(valueType, op) \
@@ -117,7 +117,7 @@ void push(Value value) {
 	vm.stackTop++;
 }
 
-Value pop() {
+Value pop(void) {
 	vm.stackTop--;
 	return *vm.stackTop;
 }
