@@ -94,7 +94,9 @@ int main(int argc, const char* argv[]) {
 	//writeChunk(&chunk, OP_NEGATE, 123);
 	//writeChunk(&chunk, OP_RETURN, 123);
 	////disassembleChunk(&chunk, "test chunk");
-	interpret("(-1 + 2) + 3 - 4");
+//	interpret("(-1 + 2) + 3 - 4");
+    interpret("!(5 - 4 > 3 * 2 == !nil)");
+
 
 	freeVM();
 	return 0;
